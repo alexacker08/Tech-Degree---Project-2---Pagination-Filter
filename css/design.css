@@ -10,10 +10,12 @@ body{
   background-color: #fff;
   border-radius: 5px;
   padding: 50px;
+  min-height: 900px;
 }
 
 .page-header{
   margin-bottom: 20px;
+  position: relative;
 }
   .page-header h2{
     float: left;
@@ -49,20 +51,20 @@ body{
     margin: 0 0 20px 0;
     padding: 0 0 20px 0;
     border-bottom: 1px solid #eaeaea;
-    opacity: 0;
-    transition-delay: 1s;
-    -webkit-transition-delay: .5s;
-    -moz-transition-delay: .5s;
-    -o-transition-delay: .5s;
-    transition: opacity .1s linear;
-    -webkit-transition: opacity .1s linear;
-    -moz-transition: opacity .1s linear;
-    -o-transition: opacity .1s linear;
+    opacity: 1;
+    transition: all .2s linear;
+    -webkit-transition: all .2s linear;
+    -moz-transition: all .2s linear;
+    -o-transition: all .2s linear;
 
   }
 
-  .student-item.activate {
-    opacity: 1;
+  .student-item.transform {
+    transform: translate(9999px);
+    -webkit-transform: translate(9999px);
+    -moz-transform: translate(9999px);
+    -o-transform: transalte(9999px);
+    opacity: 0;
 
   }
 
@@ -109,6 +111,41 @@ body{
     padding: 0;
     border-bottom: none;
   }
+
+
+.no-users {
+  display: block;
+  position: absolute;
+  right: 0;
+  width: 300px;
+  top: 250px;
+  opacity: 0;
+  transition: opacity .2s linear;
+  -webkit-transition: opacity .2s linear;
+  -moz-transition: opacity .2s linear;
+
+}
+
+.no-users.active {
+  opacity: 1;
+
+}
+
+  .no-users-box {
+    padding: 50px 80px;
+    background-color: #4ba6c3;
+    border-radius: 10px;
+    text-align: center;
+    vertical-align: middle;
+
+  }
+
+    .no-users-message {
+      font-size: 20px;
+      color: #fff;  
+
+    }
+
 
 .pagination{
   margin: 40px 0 0 0;

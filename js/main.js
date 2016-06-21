@@ -7,7 +7,9 @@ var allStudentsArray = [];
 var activeArray;
 var activePaginationArray;
 var paginationArray;
+var firstArray;
 var pagination = document.getElementsByClassName('pagination')[0].querySelector('ul');
+var noresults = document.getElementsByClassName('no-users')[0];
 var searchInput;
 var searchButton;
 var list;
@@ -104,27 +106,29 @@ function resetSearch(){
 //DISPLAY FIRST PAGE ONLY
 function displayFirstPage(){
 	hideAllStudents();
-	var firstArray = activeArray[0];
+	firstArray = activeArray[0];
 	var firstArrayLength = firstArray.length;
 	for(var i = 0; i < firstArrayLength; i++){
 		firstArray[i].style.display = "block";
-		firstArray[i].classList.add('activate');	
+
+
 	} 
+
 
 }
 
 //GIVE ALL STUDENTS THE INLINE STYLING OF BLOCK SO THAT THIS CAN BE USED LATER ON AS A WORKING CONDITION
-function allElementsBlock(){
+/*function allElementsBlock(){
 	for(var i = 0; i < students.length; i++){
 		students[i].style.display = "block";
 
 	}
 
-}
+}*/
 
 function hideAllStudents(){
 	for(var i = 0; i < students.length; i++){
-		students[i].classList.remove('activate');
+		
 		students[i].style.display = "none";
 
 	}
@@ -206,12 +210,29 @@ function searchSubmit(){
 
 		for(var i = 0; i < allStudentsArray.length; i++){
 			if(allStudentsArray[i].name.indexOf(searchFieldLower) > -1 || allStudentsArray[i].email.indexOf(searchFieldLower) > -1){
+
+					
+				noresults.classList.remove('active');
+
+
 				searchArray.push(students[i]);
 
-			} 
+			} else {
+
+				noresults.classList.add('active');
+
+			}
 		}
 
+
+
 		var pagnumber = listLength(searchArray.length);
+
+		if(searchArray.length === 0){
+			noresults.classList.add('active');
+		} else {
+			noresults.classList.remove('active');
+		}
 
 		placeIntoArray(pagnumber,searchArray)
 
@@ -226,7 +247,7 @@ appendSearch();
 
 var initialCheck = listLength(students.length);
 
-allElementsBlock();
+
 placeIntoArray(initialCheck, students);
 displayFirstPage();
 createPagLinks(initialCheck);
