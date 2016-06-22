@@ -14,7 +14,7 @@ var searchInput;
 var searchButton;
 var list;
 var aTag;
-
+var marginLeftset;
 
 /* Here I've created an Object for each student so that all of their information can be stored and accessed via an array
    and basic dot notaion. This make it easier to access during the search function when looking through records as I don't
@@ -47,11 +47,17 @@ function listLength(number){
 function createPagLinks(number){
 	
 	var pagLength = pagination.childElementCount;
+	marginLeftset = number * -26.91;
 
+	//This goes through and removes every child element of the pagination UL. 
 	if(pagination.firstElementChild){
 		for(var i = 0; i < pagLength; i++){
 			pagination.removeChild(pagination.firstElementChild);
 		}
+	}
+
+	if(number === 1){
+		return false;
 	}
 
 	for(var x = 0; x < number; x++){
@@ -68,6 +74,8 @@ function createPagLinks(number){
 
 	}
 
+	document.getElementsByClassName('pagination')[0].style.marginLeft = marginLeftset + "px";
+	
 	//GRAB THE PAGINATION LINKS AFTER CREATED
 	var paginationButton = pagination.querySelectorAll('a');
 
@@ -105,34 +113,55 @@ function resetSearch(){
 
 //DISPLAY FIRST PAGE ONLY
 function displayFirstPage(){
+	hideStudentVisibility();
 	hideAllStudents();
 	firstArray = activeArray[0];
 	var firstArrayLength = firstArray.length;
 	for(var i = 0; i < firstArrayLength; i++){
-		firstArray[i].style.display = "block";
+		//firstArray[i].style.display = "block";
 
+
+		displayFirstPageBlock(firstArray,i);
+		displayFirstPageVisible(firstArray,i);
 
 	} 
+}
 
+function displayFirstPageVisible(arrayTarget, i){
+	setTimeout(function(){
+		arrayTarget[i].classList.add('visible');
+
+	}, 200)
 
 }
 
-//GIVE ALL STUDENTS THE INLINE STYLING OF BLOCK SO THAT THIS CAN BE USED LATER ON AS A WORKING CONDITION
-/*function allElementsBlock(){
-	for(var i = 0; i < students.length; i++){
-		students[i].style.display = "block";
+function displayFirstPageBlock(arrayTarget, i){
+	setTimeout(function(){
+		arrayTarget[i].style.display = "block";
 
-	}
+	}, 60)
 
-}*/
+}
 
 function hideAllStudents(){
-	for(var i = 0; i < students.length; i++){
+	setTimeout(function(){
+
+		for(var i = 0; i < students.length; i++){
 		
-		students[i].style.display = "none";
+			students[i].style.display = "none";
 
+		}
+
+	}, 50)
+}
+
+function hideStudentVisibility(){
+	for(var i = 0; i < students.length; i++){
+
+			if(students[i].classList.contains('visible')){
+			students[i].classList.remove('visible');
+		}
 	}
-
 }
 
 //DYNAMICALLY PLACE THE ELEMENTS INTO INDEXED ARRAYS
@@ -158,11 +187,12 @@ function placeIntoArray(number, arrayList){
 
 //DISPLAY THE ELEMENTS IN THE PARTICULAR INDEX OF THE ACTIVE ARRAY
 function changePagination(number){
+	hideStudentVisibility();
 	hideAllStudents();
 	var arrayIndex = activeArray[number];
 	for(var i = 0; i < arrayIndex.length; i++){
-		arrayIndex[i].style.display = "block" 
-		arrayIndex[i].classList.add('activate');
+		displayFirstPageBlock(arrayIndex,i);
+		displayFirstPageVisible(arrayIndex,i);
 
 	}
 }
@@ -201,44 +231,40 @@ function searchSubmit(){
 	activeArray = [];
 	var searchFieldInput = searchInput.value;
 	var searchFieldLower = searchFieldInput.toLowerCase();
+	var re = new RegExp(searchFieldLower+'.+$', 'i');
+	console.log(re);
 	hideAllStudents();
 	if(searchFieldLower === ""){
 		resetSearch();
+		if(noresults.classList.contains('active')){
+			noresults.classList.remove('active');
+		}
 		return false;
 
 	} else {
 
 		for(var i = 0; i < allStudentsArray.length; i++){
-			if(allStudentsArray[i].name.indexOf(searchFieldLower) > -1 || allStudentsArray[i].email.indexOf(searchFieldLower) > -1){
-
+			if(allStudentsArray[i].name.search(re) > -1 || allStudentsArray[i].email.search(re) > -1){
 					
-				noresults.classList.remove('active');
-
-
 				searchArray.push(students[i]);
-
-			} else {
-
-				noresults.classList.add('active');
 
 			}
 		}
 
-
-
 		var pagnumber = listLength(searchArray.length);
+		console.log(pagnumber);
 
 		if(searchArray.length === 0){
 			noresults.classList.add('active');
+			pagination.classList.add('remove');
 		} else {
 			noresults.classList.remove('active');
+			pagination.classList.remove('remove');
 		}
 
 		placeIntoArray(pagnumber,searchArray)
-
 		createPagLinks(pagnumber);
 		displayFirstPage();
-
 
 	}
 }
@@ -246,8 +272,7 @@ function searchSubmit(){
 appendSearch();
 
 var initialCheck = listLength(students.length);
-
-
+	
 placeIntoArray(initialCheck, students);
 displayFirstPage();
 createPagLinks(initialCheck);

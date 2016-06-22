@@ -11,6 +11,7 @@ body{
   border-radius: 5px;
   padding: 50px;
   min-height: 900px;
+  position: relative;
 }
 
 .page-header{
@@ -34,6 +35,7 @@ body{
       border: 1px solid #eaeaea;
       padding: 8px 15px;
       font-size: 14px;
+      display: inline-block;
     }
 
     .page-header .student-search button{
@@ -42,29 +44,25 @@ body{
       padding: 8px 15px;
       font-size: 14px;
       background-color: #4ba6c3;
-      color: #fff
+      color: #fff;
+      display: inline-block;
+      margin-left: 10px;
     }
-
-.student-list{}
 
   .student-item{
     margin: 0 0 20px 0;
     padding: 0 0 20px 0;
     border-bottom: 1px solid #eaeaea;
-    opacity: 1;
-    transition: all .2s linear;
-    -webkit-transition: all .2s linear;
-    -moz-transition: all .2s linear;
-    -o-transition: all .2s linear;
+    opacity: 0;
+    transition: all .7s linear;
+    -webkit-transition: all .7s linear;
+    -moz-transition: all .7s linear;
+    -o-transition: all .7s linear;
 
   }
 
-  .student-item.transform {
-    transform: translate(9999px);
-    -webkit-transform: translate(9999px);
-    -moz-transform: translate(9999px);
-    -o-transform: transalte(9999px);
-    opacity: 0;
+  .student-item.visible {
+    opacity: 1;
 
   }
 
@@ -116,9 +114,10 @@ body{
 .no-users {
   display: block;
   position: absolute;
-  right: 0;
   width: 300px;
-  top: 250px;
+  left: 50%;
+  margin-left: -150px;
+  top: 80px;
   opacity: 0;
   transition: opacity .2s linear;
   -webkit-transition: opacity .2s linear;
@@ -148,12 +147,21 @@ body{
 
 
 .pagination{
-  margin: 40px 0 0 0;
   text-align: center;
+  position: absolute;
+  left: 50%;
+  bottom: 55px;
+
 }
- 
+
+.remove {
+  display: none;
+
+}
+
   .pagination li{
-    display: inline;
+    display: inline-block;
+    margin: 0 10px;
   }
 
     .pagination li a{
