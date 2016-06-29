@@ -1,3 +1,5 @@
+"use strict";
+
 var students = document.getElementsByClassName('student-item'); 
 var allStudentsArray = [];
 var activeArray;
@@ -117,9 +119,10 @@ function createPagLinks(number){
 
 	//For loop to build and append the required amount of pagination links
 	for(var x = 0; x < number; x++){
-
 		list = document.createElement('li');
 		aTag = document.createElement('a');
+		//Add Event Listeners to the Elements
+		addEvents(aTag, pagination);
 		if(x === 0){
 			aTag.classList.add('active');
 		}
@@ -127,30 +130,19 @@ function createPagLinks(number){
 
 		list.appendChild(aTag);
 		pagination.appendChild(list);
-
 	}
 
 	//Quick fix to help center the pagination parent element when items are removed
 	marginLeftset = number * -26.91;
 	document.getElementsByClassName('pagination')[0].style.marginLeft = marginLeftset + "px";
 	
-	//Grab all of the pagination links after they've been created
-	var paginationButton = pagination.querySelectorAll('a');
-
-	//Loop through each pagination button and apply an Event Listener and conditions to add or remove the 'active' class
-	for(var c = 0; c < paginationButton.length; c++){
-
-		addEvents(paginationButton, c);
-	
-	}
 }
 
 //This adds the event listeners and actions to the pagination links
-function addEvents(array, index){
-	var pagination = document.getElementsByClassName('pagination')[0].querySelector('ul');
-	array[index].addEventListener('click',function(e){
+function addEvents(element, list){
+	element.addEventListener('click',function(e){
 		var numberIndex = e.target.innerHTML - 1;
-		var paginationli = pagination.children;
+		var paginationli = list.children;
 
 		for(var a = 0; a < paginationli.length; a++){
 			paginationli[a].firstElementChild.classList.remove('active');
@@ -307,10 +299,7 @@ function searchSubmit(){
 	activeArray = [];
 	var searchFieldInput = searchInput.value;
 	var searchFieldLower = searchFieldInput.toLowerCase();
-	
-	//Regex Object that implements a more controlled search so that searches start with the first letter of the persons name or email address
-	var re = new RegExp('^'+searchFieldLower, 'i');
-	
+		
 	//Hide all students so as to reset the field on each individual submit
 	hideStudentVisibility(); 
 	hideAllStudents();
@@ -328,7 +317,7 @@ function searchSubmit(){
 		//If there is a value in the search input, begin to loop through each Object in the "allStudentsArray"
 		for(var i = 0; i < allStudentsArray.length; i++){
 			//Utilize the .search method agains the Regex variable
-			if(allStudentsArray[i].name.search(re) > -1 || allStudentsArray[i].email.search(re) > -1){
+			if(allStudentsArray[i].name.indexOf(searchFieldLower) > -1 || allStudentsArray[i].email.indexOf(searchFieldLower) > -1){
 				
 				//Search array is used as a temporary array to store the active elements to be eventually displayed	
 				searchArray.push(students[i]);
