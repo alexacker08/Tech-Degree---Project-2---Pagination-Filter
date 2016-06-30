@@ -1,65 +1,47 @@
 "use strict";
-
+//Grabs all the student elements from the page
 var students = document.getElementsByClassName('student-item'); 
+//Array that will hold the Object of each student
 var allStudentsArray = [];
+//Holds the Pagination Arrays which breaks up the elements
 var activeArray;
+//An array that holds elements which will exist on one page. 
 var paginationArray;
+//The first array within the activeArray
 var firstArray;
 var searchInput;
 var searchButton;
 var list;
 var aTag;
-var marginLeftset;
 
-
-/* Here I've created an Object for each student so that all of their information can be stored and accessed via an array
-   and basic dot notaion. This make it easier to access during the search function when looking through records as I don't
-   have to write DOM traverseing code to pull and grab values.
-*/
-
+//Grab students names and emails and store them in their own Object. All the student objects are then stored in the "allStudentsArray"
 for(var i = 0; i < students.length; i++){
 	var student = {
 		'name' : students[i].querySelector('h3').innerHTML,
 		'email' : students[i].querySelector('.email').innerHTML
-
 	};
-
 	allStudentsArray.push(student);
 }
 
 
-//This section runs on the initial page load
-
 //Create and append the search bar
 appendSearch();
+
+//Create and build in messaging if no users found
 createNoUsersMessage();
 
-//Create the pagination section and append to the DOM
-createPagSection();
+//Create the pagination section and build out the number of links
+var studentLength = listLength(students.length);
+createPagSection(studentLength);
 
-//Run the first check to determine the list and pagination lenghts variable
-var initialCheck = listLength(students.length);
-
-//Hide all the elements from the page while applying the "invisible" class to each element in the first run
-hideStudentVisibility();
-hideAllStudents();
-
-//Place all the student elements into the array builder	
-placeIntoArray(initialCheck, students);
-
-//Display all students
-displayFirstPage();
-
-//Create and append pagination links
-createPagLinks(initialCheck);
-
+//Resets the search area to a beginning state where all the pagination links are displayed and no search has been committed
+resetSearch();
 
 
 /************************************** FUNCTIONS ****************************************
 ******************************************************************************************/
 
-/* When called, this helps to determine the number of Pagination buttons that need to be added to the DOM. This is also used
-   to determine the number of pagination Arrays should be created in a  */
+//Determines the number of Pagination links needed to build
 function listLength(number){
 	var listNumber = Math.floor((number / 10) + 1);
 	return listNumber;
@@ -86,7 +68,7 @@ function createNoUsersMessage(){
 }
 
 //Creates the pagination section to hold the pagination links and appends it to the bottom of the page
-function createPagSection(){
+function createPagSection(length){
 	var pag = document.createElement('div');
 	var pagul = document.createElement('ul');
 	var pages = document.getElementsByClassName('page')[0];
@@ -95,47 +77,18 @@ function createPagSection(){
 	pag.appendChild(pagul);
 	pages.appendChild(pag);
 
-}
-
-
-//DYNAMICALLY CREATE THE PAGINATION LINKS
-function createPagLinks(number){
-	var pagination = document.getElementsByClassName('pagination')[0].querySelector('ul');
-
-	//Grab the current number of pagination links that exist
-	var pagLength = pagination.childElementCount;
-	
-	//Remove all the pagination links that currently exist so that we can start with a clean slate 
-	if(pagination.firstElementChild){
-		for(var i = 0; i < pagLength; i++){
-			pagination.removeChild(pagination.firstElementChild);
-		}
-	}
-
-	//If the number of pagination links to create is 1, end the function and don't display any at all
-	if(number === 1){
-		return false;
-	}
-
-	//For loop to build and append the required amount of pagination links
-	for(var x = 0; x < number; x++){
+	for(var i = 0; i < length; i++){
 		list = document.createElement('li');
 		aTag = document.createElement('a');
-		//Add Event Listeners to the Elements
-		addEvents(aTag, pagination);
-		if(x === 0){
+		addEvents(aTag, pagul);
+		if(i === 0){
 			aTag.classList.add('active');
 		}
-		aTag.innerHTML = x + 1;
-
+		aTag.innerHTML = i + 1;
 		list.appendChild(aTag);
-		pagination.appendChild(list);
-	}
+		pagul.appendChild(list);
 
-	//Quick fix to help center the pagination parent element when items are removed
-	marginLeftset = number * -26.91;
-	document.getElementsByClassName('pagination')[0].style.marginLeft = marginLeftset + "px";
-	
+	}
 }
 
 //This adds the event listeners and actions to the pagination links
@@ -155,6 +108,26 @@ function addEvents(element, list){
 	});
 }
 
+//This adjusts the number of Pagination links that need to be present on the page based on the search results
+function adjustPagLinks(number){
+	var pagination = document.getElementsByClassName('pagination')[0].querySelectorAll('li');
+	for(var x = 0; x < pagination.length; x++){
+		pagination[x].classList.add('remove');
+	}
+
+	if(number <= 1){
+		return false;
+	} else {
+		for(var i = 0; i < number; i++){
+			pagination[i].classList.remove('remove');
+		}
+	}
+
+	var marginLeftset = number * -26.91;
+	document.getElementsByClassName('pagination')[0].style.marginLeft = marginLeftset + "px";
+
+}
+
 
 //Running this allows the user to jump to another set of elements within the current activeArray. 
 function changePagination(number){
@@ -170,15 +143,15 @@ function changePagination(number){
 
 //Resets the student listing back to the original layout that is run on first load.
 function resetSearch(){
-	var length = listLength(students.length);
-
-	placeIntoArray(length, students);
+	hideStudentVisibility();
+	hideAllStudents();
+	pagArrayBuilder(studentLength, students);
 	displayFirstPage();
-	createPagLinks(length);
+	adjustPagLinks(studentLength);
 
 }
 
-//Display the first array within the activeArray index
+//Display the first array of elements within the activeArray index
 function displayFirstPage(){
 	firstArray = activeArray[0];
 	var firstArrayLength = firstArray.length;
@@ -209,7 +182,7 @@ function displayFirstPageBlock(arrayTarget, i){
 
 }
 
-/*Set all the students to display "none". A timeout is applied so that change of opacity to 0 transitions and the effect is run*/
+/*Set all the students to display "none". A timeout is applied so that change of opacity to 0 transitions and the effect is run first*/
 function hideAllStudents(){
 	setTimeout(function(){
 
@@ -233,10 +206,11 @@ function hideStudentVisibility(){
 }
 
 
-/*This serves as the Array within Array builder and is crucial to placing elements appropriately within a pagination state.
-Essentially, any array provided here along with number number for which it should be broken will build an array with a number of arrays within it
+/*This serves as the Array within Array builder and is crucial to placing the right elements appropriately within a pagination state.
+Essentially, any array provided here along with a number will determine how many arrays should be built inside.
 These arrays are indexed and are the building blocks of allowing pagination*/
-function placeIntoArray(number, arrayList){
+function pagArrayBuilder(number, arrayList){
+	//Clear out what is 
 	activeArray = [];
 	var index = 0;		
 	
@@ -284,14 +258,7 @@ function appendSearch(){
 }
 
 
-/*Here exists the search function which is applied when users keyup within the search input or hit the submit button.
- The function starts by cleaning out the activeArray of students as well as the pagination array so as to start with
- a clean slate. From there the function implements a regex Object utilizing a "^" symbol before the searched value so as to
- match the first value against the first name or emails of the users. Using indexOf or other regex values I found to
- be too loosely matched as it just looks for any common string within a string regardlesss of where it exists. Once
- matches are found, the elements of the students to show are pushed into a local "searchArray" which is then sent into
- other functions to help rebuild the "activeArray" and eventually pushed live to the DOM.
-  */
+//Search function which fires on a the keyup listener. 
 function searchSubmit(){	
 	var noresults = document.getElementsByClassName('no-users')[0];
 	var searchArray = [];
@@ -299,11 +266,12 @@ function searchSubmit(){
 	activeArray = [];
 	var searchFieldInput = searchInput.value;
 	var searchFieldLower = searchFieldInput.toLowerCase();
-		
+
 	//Hide all students so as to reset the field on each individual submit
 	hideStudentVisibility(); 
+		
 	hideAllStudents();
-
+		
 	//This is a used for is a user decides to delete all the way back to empty. If this occurs, the page resets to as it was on original pageload
 	if(searchFieldLower === ""){
 		resetSearch();
@@ -316,34 +284,30 @@ function searchSubmit(){
 
 		//If there is a value in the search input, begin to loop through each Object in the "allStudentsArray"
 		for(var i = 0; i < allStudentsArray.length; i++){
-			//Utilize the .search method agains the Regex variable
+			//Check to see if the string exists against the Names and Emails
 			if(allStudentsArray[i].name.indexOf(searchFieldLower) > -1 || allStudentsArray[i].email.indexOf(searchFieldLower) > -1){
 				
-				//Search array is used as a temporary array to store the active elements to be eventually displayed	
+				//Search array is used as a temporary array to store the active elements to be eventually displayed	or stored in paginationli
 				searchArray.push(students[i]);
 
-			}
+			} 
 		}
 
-		//Run "Listlength" to determine number of pagination links required as well as the number 
+		//Run "Listlength" to determine number of pagination links required and arrays to be placed within the activeArray
 		var pagnumber = listLength(searchArray.length);
 
 		//If nothing was pushed into the "searchArray", this means nothing was found thus add a class to element to increase its opacity to 1.
 		if(searchArray.length === 0){
-
 			noresults.classList.add('active');
-
 		} else {
-
 			noresults.classList.remove('active');
-
 		}
 
 		//Run the Array builder function based on the number Paginations required and elements that match the search
-		placeIntoArray(pagnumber,searchArray);
+		pagArrayBuilder(pagnumber,searchArray);
 		
-		//Create the number of pagination links based on the identified number
-		createPagLinks(pagnumber);
+		//Create the number of pagination links based on the listLength function run earlier
+		adjustPagLinks(pagnumber);
 		
 		//Display the elements that meeting the Regex criteria
 		displayFirstPage();
